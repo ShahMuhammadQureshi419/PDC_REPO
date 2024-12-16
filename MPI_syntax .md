@@ -355,3 +355,132 @@ int main(int argc, char** argv) {
 ---
 
 Each example includes simple **C code** that can be compiled with `mpicc` and executed using `mpirun`.
+
+
+
+
+Here are the **syntax**, **scenario**, and **code examples** for `MPI_Send`, `MPI_Recv`, and `MPI_Sendrecv`.
+
+---
+
+### 1. **`MPI_Send`** and **`MPI_Recv`**  
+These are used for point-to-point communication between two processes.
+
+#### **Syntax**:  
+- `MPI_Send(buffer, count, datatype, dest, tag, comm)`  
+- `MPI_Recv(buffer, count, datatype, source, tag, comm, status)`
+
+- `buffer`: Data to send/receive.  
+- `count`: Number of elements.  
+- `datatype`: MPI data type (e.g., `MPI_INT`).  
+- `dest/source`: Rank of destination/source process.  
+- `tag`: Message identifier.  
+- `comm`: Communicator (e.g., `MPI_COMM_WORLD`).  
+- `status`: Information about the received message.
+
+---
+
+#### **Scenario**:  
+Process 0 sends a message to Process 1, and Process 1 receives it.
+
+```c
+#include <mpi.h>
+#include <stdio.h>
+
+int main(int argc, char** argv) {
+    int rank, size, data;
+
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    if (size < 2) {
+        printf("This program requires at least 2 processes.\n");
+        MPI_Finalize();
+        return 0;
+    }
+
+    if (rank == 0) {
+        data = 42; // Data to send
+        MPI_Send(&data, 1, MPI_INT, 1, 0, MPI_COMM_WORLD);
+        printf("Process 0 sent data: %d to Process 1\n", data);
+    } else if (rank == 1) {
+        MPI_Recv(&data, 1, MPI_INT, 0, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        printf("Process 1 received data: %d from Process 0\n", data);
+    }
+
+    MPI_Finalize();
+    return 0;
+}
+```
+
+---
+
+### 2. **`MPI_Sendrecv`**  
+This combines `MPI_Send` and `MPI_Recv` into a single operation. It is used for simultaneous sending and receiving of messages.
+
+#### **Syntax**:  
+- `MPI_Sendrecv(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, recvcount, recvtype, source, recvtag, comm, status)`
+
+- `sendbuf`: Buffer for data to send.  
+- `recvbuf`: Buffer for data to receive.  
+- `sendcount/recvcount`: Number of elements.  
+- `sendtype/recvtype`: Data types.  
+- `dest/source`: Rank of destination/source process.  
+- `sendtag/recvtag`: Message tags.  
+- `status`: Status of the received message.
+
+---
+
+#### **Scenario**:  
+Processes exchange data with each other. Process 0 sends data to Process 1 and receives data back from Process 1.
+
+```c
+#include <mpi.h>
+#include <stdio.h>
+
+int main(int argc, char** argv) {
+    int rank, size;
+    int send_data, recv_data;
+
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+
+    if (size < 2) {
+        printf("This program requires at least 2 processes.\n");
+        MPI_Finalize();
+        return 0;
+    }
+
+    if (rank == 0) {
+        send_data = 100; // Data to send
+        MPI_Sendrecv(&send_data, 1, MPI_INT, 1, 0, 
+                     &recv_data, 1, MPI_INT, 0, 0, 
+                     MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        printf("Process 0 sent %d and received %d\n", send_data, recv_data);
+    } else if (rank == 1) {
+        send_data = 200; // Data to send
+        MPI_Sendrecv(&send_data, 1, MPI_INT, 0, 0, 
+                     &recv_data, 1, MPI_INT, 1, 0, 
+                     MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        printf("Process 1 sent %d and received %d\n", send_data, recv_data);
+    }
+
+    MPI_Finalize();
+    return 0;
+}
+```
+
+---
+
+### **Summary**:
+
+| **Function**     | **Purpose**                                                 |
+|------------------|-------------------------------------------------------------|
+| **`MPI_Send`**   | Sends a message to another process.                         |
+| **`MPI_Recv`**   | Receives a message from another process.                    |
+| **`MPI_Sendrecv`** | Combines sending and receiving data in one operation.     |
+
+
+Each example demonstrates the syntax and functionality for `MPI_Send`, `MPI_Recv`, and `MPI_Sendrecv`.
