@@ -1,5 +1,44 @@
 Here is the **syntax** for calling each of the mentioned **MPI communication functions**:
 
+
+- `MPI_Send(buffer, count, datatype, dest, tag, comm)`  
+- `MPI_Recv(buffer, count, datatype, source, tag, comm, status)`
+- `MPI_Sendrecv(sendbuf, sendcount, sendtype, dest, sendtag, recvbuf, recvcount, recvtype, source, recvtag, comm, status)`
+```c
+MPI_Bcast(void *buffer, int count, MPI_Datatype datatype, int root, MPI_Comm comm);
+```
+```c
+MPI_Scatter(const void *sendbuf, int sendcount, MPI_Datatype sendtype, 
+            void *recvbuf, int recvcount, MPI_Datatype recvtype, 
+            int root, MPI_Comm comm);
+```
+```c
+MPI_Gather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, 
+           void *recvbuf, int recvcount, MPI_Datatype recvtype, 
+           int root, MPI_Comm comm);
+```
+```c
+MPI_Reduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
+           MPI_Op op, int root, MPI_Comm comm);
+```
+```c
+MPI_Allreduce(const void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, 
+              MPI_Op op, MPI_Comm comm);
+```
+```c
+MPI_Allgather(const void *sendbuf, int sendcount, MPI_Datatype sendtype, 
+              void *recvbuf, int recvcount, MPI_Datatype recvtype, 
+              MPI_Comm comm);
+```
+```c
+MPI_Alltoall(const void *sendbuf, int sendcount, MPI_Datatype sendtype, 
+             void *recvbuf, int recvcount, MPI_Datatype recvtype, 
+             MPI_Comm comm);
+```
+
+
+
+
 ---
 
 ### 1. **`MPI_Bcast`**  
